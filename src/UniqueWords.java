@@ -4,11 +4,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class UniqueWords {
     static AtomicBoolean goDown = new AtomicBoolean(); // глобальный флаг завершения процессов
-    static AtomicInteger th_counter = new AtomicInteger(0); // счетчик запущенных процессов
     public static void main(String[] args) {
         TaskListReader taskListReader = new TaskListReader("tasks.txt");
         ArrayList<String> taskList = new ArrayList<>();
@@ -51,10 +49,10 @@ public class UniqueWords {
                         executorService.shutdown();
                     }
                 });
-            th_counter.incrementAndGet(); // уменьшаем счетчик потоков
             }
 // - - -
-        while (th_counter.get()>0){} // ждем окончания работы потоков
+        while (!executorService.isShutdown());// ждем окончания работы потоков
+
         t_finish = System.currentTimeMillis();
         System.out.println("Время работы : " + (t_finish-t_start)+" мс");
     }
