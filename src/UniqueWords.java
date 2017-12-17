@@ -1,6 +1,4 @@
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +15,6 @@ public class UniqueWords {
         taskList = taskListReader.readList(); // список файлов на обработку
         ConcurrentHashMap<String,String> hmap =
                 new ConcurrentHashMap<>(2048);
-
 
         System.out.println("Список файлов для анализа :");
         ArrayList<String> checkedList = new ArrayList<>();
@@ -45,30 +42,20 @@ public class UniqueWords {
 
                     public void run() {
                         FileReader fr = new FileReader();
+                        // readFile возвращает true, если в файле содержится
+                        // хотя бы одно неуникальное слово
                         if (!fr.readFile(tsk,hmap)) {
                             System.out.println("В файле "+tsk+" найдено неуникальное слово! \n" +
                                                 "Завершение программы.");
                         }
-
                         executorService.shutdown();
                     }
                 });
             th_counter.incrementAndGet(); // уменьшаем счетчик потоков
             }
 // - - -
-
         while (th_counter.get()>0){} // ждем окончания работы потоков
         t_finish = System.currentTimeMillis();
         System.out.println("Время работы : " + (t_finish-t_start)+" мс");
-        // readFile возвращает true, если в файле содержится хотя бы одно неуникальное слово
-
-        // для создания тестовых файлов (только уникальные слова)
-        /*
-        System.out.println("-----------------------------");
-        for (Map.Entry<String, String> entry : hmap.entrySet()) {
-            System.out.println(entry.getKey());
-        }
-        */
-
     }
 }
