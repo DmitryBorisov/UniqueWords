@@ -22,7 +22,7 @@ public class FileReader {
                 ^\w - Любой знак, отличный от буквы или цифры
                  */
                 String w_tmp;
-                for (String word : line.split("[\\p{Punct}\\s^\\w-«»]")) {
+                for (String word : line.split("[\\p{Punct}\\s^-«»]")) {
                     if ((!word.isEmpty()) && (word.length()>1)) {
                         word=word.toLowerCase();
 

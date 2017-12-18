@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class UniqueWords {
     static AtomicBoolean goDown = new AtomicBoolean(); // глобальный флаг завершения процессов
     public static void main(String[] args) {
+        AtomicBoolean global_unique_flag = new AtomicBoolean();
         TaskListReader taskListReader = new TaskListReader("tasks.txt");
         ArrayList<String> taskList = new ArrayList<>();
         taskList = taskListReader.readList(); // список файлов на обработку
@@ -29,7 +30,7 @@ public class UniqueWords {
 
         long t_start,t_finish;
         t_start = System.currentTimeMillis();
-
+        global_unique_flag.set(true);
 // - - -  создаем список потоков по списку файлов
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
@@ -45,15 +46,18 @@ public class UniqueWords {
                         if (!fr.readFile(tsk,hmap)) {
                             System.out.println("В файле "+tsk+" найдено неуникальное слово! \n" +
                                                 "Завершение программы.");
+                            global_unique_flag.set(false);
                         }
                         executorService.shutdown();
                     }
                 });
             }
 // - - -
-        while (!executorService.isShutdown());// ждем окончания работы потоков
-
+        while (!executorService.isTerminated());// ждем окончания работы потоков
         t_finish = System.currentTimeMillis();
+        if (global_unique_flag.get()) {
+            System.out.println("В предоставленных файлах повторяющихся слов нет");
+        } 
         System.out.println("Время работы : " + (t_finish-t_start)+" мс");
     }
 }
